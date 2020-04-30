@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy]
-
+  before_action :authenticate_user!, except: [:show, :index]
   # GET /posts
   # GET /posts.json
   def index
@@ -70,5 +70,12 @@ class PostsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def post_params
       params.require(:post).permit(:title, :body, :balge, :user_id)
+    end
+    
+    def require_user_signed_in
+      return if current_user == @post.user
+      respond_to do |format|
+        format.htm {redirect_to root_path, notice: "You need to be logged in to perfomr that action!"}
+      end
     end
 end
